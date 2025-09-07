@@ -22,8 +22,6 @@ router
     res.send(playlists);
   })
   .post(requireBody(["name", "description"]), async (req, res) => {
-    // if (!req.body) return res.status(400).send("Request body is required.");
-    // console.log(req.user.id);
     const { name, description } = req.body;
     if (!name || !description)
       return res.status(400).send("Request body requires: name, description");
@@ -41,16 +39,27 @@ router.param("id", async (req, res, next, id) => {
 });
 
 router.route("/:id").get((req, res) => {
+  if (req.user.id !== req.playlist.user_id) {
+    return res.status(403).send("You are not authorized to be here!");
+  }
   res.send(req.playlist);
 });
 
 router
   .route("/:id/tracks")
   .get(async (req, res) => {
+    if (!req.user.id) return res.status(401).send("Invalid Username / Password.");
+    if (req.user.id !== req.playlist.user_id) {
+      return res.status(403).send("You are not authorized to be here!");
+    }
+
     const tracks = await getTracksByPlaylistId(req.playlist.id);
     res.send(tracks);
   })
   .post(async (req, res) => {
+    if (req.user.id !== req.playlist.user_id) {
+      return res.status(403).send("You are not authorized to be here!");
+    }
     if (!req.body) return res.status(400).send("Request body is required.");
 
     const { trackId } = req.body;
