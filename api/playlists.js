@@ -38,17 +38,21 @@ router.param("id", async (req, res, next, id) => {
   next();
 });
 
-router.route("/:id").get((req, res) => {
+router.route("/:id").get(async (req, res) => {
   if (req.user.id !== req.playlist.user_id) {
     return res.status(403).send("You are not authorized to be here!");
   }
-  res.send(req.playlist);
+
+  const tracks = await getTracksByPlaylistId(req.playlist.id);
+
+  res.send([req.playlist, tracks]);
 });
 
 router
   .route("/:id/tracks")
   .get(async (req, res) => {
-    if (!req.user.id) return res.status(401).send("Invalid Username / Password.");
+    if (!req.user.id)
+      return res.status(401).send("Invalid Username / Password.");
     if (req.user.id !== req.playlist.user_id) {
       return res.status(403).send("You are not authorized to be here!");
     }

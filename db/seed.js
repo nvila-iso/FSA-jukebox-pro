@@ -4,7 +4,7 @@ import { randMusicGenre, randSong, randCatchPhrase } from "@ngneat/falso";
 import { createPlaylist } from "#db/queries/playlists";
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { createTrack, getTracks } from "#db/queries/tracks";
-import { createUser, getUsers } from "#db/queries/users";
+import { createUser } from "#db/queries/users";
 
 await db.connect();
 await seed();
